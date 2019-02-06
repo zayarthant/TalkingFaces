@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <h:head>
+        <title>TALKING FACES</title>
+        <link href="resources/w3.css" rel="stylesheet" type="text/css"/>
+        <link href="resources/font-awesome.css" rel="stylesheet" type="text/css"/>
+        <link href="resources/file_upload_field.css" rel="stylesheet" type="text/css"/>
+        <link href="resources/main.css" rel="stylesheet" type="text/css"/>
+        <script src="resources/jquery.js" type="text/javascript"></script>
+        <script src="resources/index.js" type="text/javascript"></script>
+        <meta charset="UTF-8"/>
+        <meta http-equiv="Content-type" value="text/html; charset=UTF-8"/>
+        <meta  name="viewport" content="width=device-width"/>
+    </h:head>
+    <h:body>
+
+        <nav class="w3-bar w3-border w3-lime w3-top">
+            <ui:insert name="nav"></ui:insert>
+        </nav>
+
+        <section id="MainSection" class="margin-top-64 w3-row margin-bottom-64">
+            <ui:insert name="main"></ui:insert>
+        </section>
+
+    </h:body>
+</html>

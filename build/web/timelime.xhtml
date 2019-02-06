@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./template.xhtml">
+
+            <ui:define name="nav">
+                <f:metadata>
+                    <f:event type="preRenderView" listener="#{profileController.onPageLoad()}"/>
+                </f:metadata>
+                <h:form>
+                    <h:commandLink class="w3-bar-item w3-button w3-text-indigo w3-right" action="#{profileController.logOut()}">
+                        <i class="fa fa-sign-out menu-icon-font"></i>
+                    </h:commandLink>
+                    <h:commandLink class="w3-bar-item w3-button w3-text-purple w3-right" action="#{postController.postFilter(loginController.id)}">
+                        <i class="fa fa-user-circle-o menu-icon-font"></i>
+                    </h:commandLink>
+                    <h:commandLink class="w3-bar-item w3-button w3-text-purple w3-right" action="#{postController.init()}">
+                        <i class="fa fa-home menu-icon-font"></i>
+                    </h:commandLink>
+                    <span class="w3-bar-item royial-beautiful w3-text-white">Talking Faces</span>
+                    <h:inputText class="w3-bar-item w3-input" id="search" value="#{postController.search}">
+                        <f:passThroughAttribute name="placeholder" value="Search.."/>
+                        <f:ajax render="@this" execute="@this"/>
+                    </h:inputText>
+                    <h:commandLink class="w3-bar-item w3-button w3-purple" action="#{postController.searchPost()}">
+                        <i class="fa fa-search"></i>
+                    </h:commandLink>
+                </h:form>
+            </ui:define>
+
+            <ui:define name="main">
+
+                <section id="InformSection" class="w3-container w3-col l5 m5 s12 w3-white">
+                    <h5 class="fa fa-info-circle"> Information</h5>
+                    <h:graphicImage class="w3-image w3-border  w3-card-4"   library="image" value="/resources/image/#{loginController.profileUrl}">
+                    </h:graphicImage>
+
+                    <p>Name : #{loginController.userName}</p>
+                    <p>Email : #{loginController.email}</p>
+
+                    <h:form  id="imageUpload" enctype="multipart/form-data">
+                        <div class="w3-row w3-border">
+                            <h:inputText class="w3-input  File-Show w3-col m9 l9 s9" id="profileAddress" required="true">
+                                <f:passThroughAttribute name="placeholder" value="Upload Image"/>
+                                <f:passThroughAttribute name="required" value="true"/>
+                            </h:inputText>
+                            <div class="File-Upload w3-button w3-green w3-col m3 l3 s3">
+                                <span class="fa fa-cloud-upload"> Choose</span>
+                                <h:inputFile class="upload" required="true" value="#{profileController.profilePath}">
+                                    <f:passThroughAttribute name="required" value="true"/>
+                                </h:inputFile>
+                            </div>
+                        </div>
+                        <h:commandButton  class="w3-button w3-margin-top  w3-margin-bottom w3-green w3-center"  value="Post" action="#{profileController.postImage()}"/>
+                    </h:form>
+                </section>
+
+                <section id="PostSection" class="w3-container w3-col l7 m7 s12">
+                    <ui:repeat value="#{postController.postList}" var="list">
+                        <div class="w3-card-4 w3-white w3-margin-bottom">
+                            <nav class="w3-container w3-row w3-padding">
+                                <h:graphicImage library="image" class="w3-col l1 m1 s3" style="margin-top:7px" value="/resources/image/#{list.userAccount.profileImage}"/>
+                                <section class="w3-third w3-left-align w3-container w3-col l10 m10 s8">
+                                    <h:form>
+                                        <h:commandLink  style="text-decoration: none;" class="margin-padding-0" action="#{postController.postFilter(list.userAccount.id)}">
+                                            #{list.userAccount.name}
+                                        </h:commandLink>
+                                    </h:form>
+                                    <p class="datetime">#{list.postDate.toString()}</p>
+                                </section>
+                                <div class="w3-dropdown-hover w3-col l1 m1 s1">
+                                    <p class="fa fa-ellipsis-v"></p>
+                                    <div class="w3-dropdown-content w3-bar-block w3-border">
+                                        <h:outputLink class="w3-bar-item w3-button fa fa-download" value="/TALKING_FACES/resources/post/#{list.url}">
+                                            Download
+                                        </h:outputLink>
+                                        <h:form>
+                                            <h:commandLink class="w3-bar-item w3-button fa fa-trash-o" action="#{postController.DeletePost(list.id, loginController.id)}" rendered="#{loginController.isOwner(list.userAccount.id)}">
+                                                Delete
+                                            </h:commandLink>
+                                        </h:form>
+                                    </div>
+                                </div>
+                            </nav>
+                            <h:graphicImage library="post" value="/resources/post/#{list.url}"/>
+                            <footer>
+                                <nav class="w3-bar">
+                                    <h:form>
+                                        <h:outputText class="margin-padding-0 w3-margin-top w3-right w3-margin-right" value="#{likeController.getLikeCount(list.id)} Like"/>
+                                        <h:commandLink class="like-button w3-text-indigo w3-white w3-bar-item" action="#{likeController.likeIncrease(list.id)}">
+                                            <i class="fa fa-thumbs-up"></i>
+                                            <f:ajax render="@form" execute="@this"/>
+                                        </h:commandLink>
+                                    </h:form>
+                                    <button onclick="toggle('#{list.id}-comment')" class="comment-button w3-text-teal w3-white  w3-bar-item">
+                                        <i class="fa fa-comments"></i>
+                                    </button>
+                                </nav>
+                                <section id="#{list.id}-comment" class="w3-hide w3-border">
+                                    <h:form class="w3-row">
+                                        <h:inputText class="w3-input w3-col l9 m9 s9" value="#{commentController.comment}">
+                                            <f:passThroughAttribute name="required" value="true"/>
+                                            <f:passThroughAttribute name="placeholder" value="How about this photo..."/>
+                                            <f:ajax render="@this" execute="@this"/>
+                                        </h:inputText>
+                                        <h:commandButton class="w3-btn w3-green w3-col l3 m3 s3" value="Comment" action="#{commentController.createComment(list.id)}">
+                                            <f:ajax render="@form" execute="@this"/>
+                                        </h:commandButton>
+                                        <ui:repeat value="#{commentController.getCommentList(list.id)}" var="commentList">
+                                            <div class="thin-border-bottom w3-container ">
+                                                <h4 class="fa fa-user-circle-o"> #{commentList.userAccount.name}</h4>
+                                                <p class="margin-padding-0">#{commentList.comment}</p>
+                                            </div>
+                                        </ui:repeat>
+                                    </h:form>
+                                </section>
+                            </footer>
+                        </div>
+                    </ui:repeat>
+                    <div class="w3-bar">
+                        <h:form>
+                            <h:commandLink class="w3-button w3-indigo w3-right w3-margin-right"  value="Next" action="#{postController.incStartingPoint()}"/>
+                            <h:commandLink class="w3-button w3-indigo w3-margin-left" value="Previous" action="#{postController.decStartingPoint()}" rendered="#{postController.startingPoint > 5}"/>
+                        </h:form>
+                    </div>
+                </section>
+            </ui:define>
+            
+        </ui:composition>
+
+    </body>
+</html>
